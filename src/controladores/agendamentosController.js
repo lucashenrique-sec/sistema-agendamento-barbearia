@@ -21,7 +21,36 @@ function criarAgendamento(req, res) {
     res.status(201).json(novoAgendamento);
 }
 
+function cancelarAgendamento(req, res) {
+    const { cliente, data, horario } = req.body || {};
+
+    if (!cliente || !data || !horario) {
+        return res.status(400).json({
+            mensagem: 'Informe cliente, data e horário!'
+        });
+    }
+
+    const indice = agendamentos.findIndex(agendamento =>
+        agendamento.cliente === cliente &&
+        agendamento.data === data &&
+        agendamento.horario === horario
+    );
+
+    if (indice === -1) {
+        return res.status(404).json({
+            mensagem: 'Agendamento não encontrado!'
+        });
+    }
+
+    agendamentos.splice(indice, 1);
+
+    res.status(200).json({
+        mensagem: 'Agendamento cancelado com sucesso!'
+    });
+}
+
 module.exports = {
     listarAgendamentos,
-    criarAgendamento
+    criarAgendamento,
+    cancelarAgendamento
 };
