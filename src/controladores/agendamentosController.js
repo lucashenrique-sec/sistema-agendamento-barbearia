@@ -6,13 +6,24 @@ function listarAgendamentos(req, res) {
 }
 
 function criarAgendamento(req, res) {
-    const novoAgendamento = req.body;
+    const novoAgendamento = req.body || {};
 
     const { cliente, servico, data, horario } = novoAgendamento;
 
     if (!cliente || !servico || !data || !horario) {
         return res.status(400).json({
             mensagem: 'Todos os campos são obrigatórios!'
+        });
+    }
+
+    const horarioOcupado = agendamentos.some(agendamento =>
+        agendamento.data === data &&
+        agendamento.horario === horario
+    );
+
+    if (horarioOcupado) {
+        return res.status(409).json({
+            mensagem: 'Este horário já está reservado!'
         });
     }
 
