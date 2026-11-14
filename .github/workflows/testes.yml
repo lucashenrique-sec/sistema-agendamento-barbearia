@@ -1,0 +1,29 @@
+
+name: Testes Automatizados da Barbearia
+
+on:
+  push:
+    branches: [main, melhoria-validacao-agendamentos]
+  pull_request:
+    branches: [main]
+
+jobs:
+  testes:
+    name: Executar testes automatizados
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Executar testes e verificar cobertura
+        run: npm test

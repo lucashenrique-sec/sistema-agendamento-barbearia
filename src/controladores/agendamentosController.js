@@ -10,15 +10,19 @@ function criarAgendamento(req, res) {
 
     const { cliente, servico, data, horario } = novoAgendamento;
 
-    if (!cliente || !servico || !data || !horario) {
+    const camposValidos = [cliente, servico, data, horario].every(
+        campo => typeof campo === 'string' && campo.trim() !== ''
+    );
+
+    if (!camposValidos) {
         return res.status(400).json({
-            mensagem: 'Todos os campos são obrigatórios!'
+            mensagem: 'Todos os campos devem ser preenchidos corretamente!'
         });
     }
 
     const horarioOcupado = agendamentos.some(agendamento =>
-        agendamento.data === data &&
-        agendamento.horario === horario
+        agendamento.data === data.trim() &&
+        agendamento.horario === horario.trim()
     );
 
     if (horarioOcupado) {
@@ -27,9 +31,16 @@ function criarAgendamento(req, res) {
         });
     }
 
-    agendamentos.push(novoAgendamento);
+    const agendamentoValidado = {
+        cliente: cliente.trim(),
+        servico: servico.trim(),
+        data: data.trim(),
+        horario: horario.trim()
+    };
 
-    res.status(201).json(novoAgendamento);
+    agendamentos.push(agendamentoValidado);
+
+    res.status(201).json(agendamentoValidado);
 }
 
 function cancelarAgendamento(req, res) {
